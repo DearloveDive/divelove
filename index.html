@@ -22,18 +22,26 @@
   --g3:#6d6d69;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 html,body{margin:0;padding:0;background:var(--bg);}
 body{
   color:var(--ink);
   font-family:'IBM Plex Sans KR','IBM Plex Mono',sans-serif;
   font-size:15px;line-height:1.5;
   display:flex;justify-content:center;
-  padding:44px 22px calc(52px + env(safe-area-inset-bottom));
+  padding:34px 8px calc(40px + env(safe-area-inset-bottom));
 }
+/* 화면이 좁으면 카드 전체를 그대로 축소합니다 (비율은 PC와 동일) */
+.fit{width:100%;display:flex;justify-content:center;overflow:hidden;}
 .mono{font-family:'IBM Plex Mono',monospace;}
+/* 띄어쓰기 없는 긴 글이 칸 밖으로 나가지 않도록 */
+.micro,.defn,.modtxt,.footxt,.geo,.cxmeta,.cltitle,.clchips span,
+.sec p,.sec li,.pair dd,.promptbox{overflow-wrap:anywhere;word-break:break-word;}
+.geo{min-width:0;}
+.geo b{min-width:0;}
 
 /* ============ 크롭 마크 ============ */
-.stage{position:relative;width:100%;max-width:430px;}
+.stage{position:relative;width:420px;flex:none;transform-origin:top center;}
 .stage .reg{position:absolute;width:15px;height:15px;opacity:.85;}
 .stage .reg::before,.stage .reg::after{content:"";position:absolute;background:#fff;}
 .stage .reg::before{left:7px;top:0;width:1px;height:15px;}
@@ -98,7 +106,7 @@ body{
 /* ============ 이름 ============ */
 .hero{display:grid;grid-template-columns:1fr 22px;gap:10px;padding:14px 0 4px;}
 .kicker{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.2em;color:var(--g3);margin:0 0 4px;}
-.name{font-size:clamp(34px,11.5vw,50px);font-weight:700;letter-spacing:-.045em;line-height:.88;margin:0;}
+.name{font-size:46px;font-weight:700;letter-spacing:-.045em;line-height:.88;margin:0;}
 .name s{display:block;text-decoration:none;color:var(--g2);}
 .vtext{writing-mode:vertical-rl;font-family:'IBM Plex Mono',monospace;
   font-size:8.5px;letter-spacing:.22em;color:var(--g3);justify-self:end;}
@@ -188,7 +196,9 @@ body{
   font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.18em;
   margin:0 0 8px;padding-bottom:5px;border-bottom:1px solid var(--ink);}
 .sec > h3 s{color:var(--g3);text-decoration:none;font-weight:400;letter-spacing:0;font-size:11px;}
-.sec p{margin:0 0 6px;font-size:14px;}
+.sec p{margin:0 0 6px;font-size:14px;overflow-wrap:anywhere;}
+.sec dd,.sec li{overflow-wrap:anywhere;}
+.panelbody{overflow-wrap:anywhere;}
 .sec ul{margin:0;padding-left:15px;font-size:14px;}
 .sec li{margin-bottom:3px;}
 .pair{display:grid;grid-template-columns:74px 1fr;gap:3px 10px;font-size:14px;}
@@ -267,15 +277,46 @@ body{
 .clnone.on{display:block;}
 
 @media (max-width:560px){
+  /* iOS가 입력칸에서 화면을 확대하지 않도록 16px 유지 */
+  .clbar input,.lockrow input{font-size:16px;}
   .clhead{grid-template-columns:1fr 26px;}
   .clhead span:nth-child(2){display:none;}
   .clrow{grid-template-columns:1fr 26px;gap:8px 12px;}
   .clchips{grid-column:1/3;}
-}
-@media (max-width:360px){
-  .split{grid-template-columns:1fr;}
-  .split > div:first-child{border-right:none;border-bottom:1px solid var(--ink);padding-right:0;}
-  .split > div:last-child{padding-left:0;}
+
+  /* 카드가 작아진 만큼 패널도 같은 비율로 줄입니다 */
+  .panel{padding:14px 11px calc(14px + env(safe-area-inset-bottom));}
+  .panelbox{border-radius:16px;}
+  .panelhead{font-size:9px;padding:11px 12px;letter-spacing:.16em;}
+  .panelhead button{font-size:9px;padding:4px 8px;}
+  .panelbody{padding:13px 13px 4px;}
+  .sec{margin-bottom:16px;}
+  .sec > h3{font-size:9px;letter-spacing:.14em;}
+  .sec > h3 s{font-size:10px;}
+  .sec p,.sec ul{font-size:12.5px;}
+  .pair{grid-template-columns:62px 1fr;font-size:12.5px;}
+  .pair dt{font-size:8px;letter-spacing:.1em;}
+  .clbar{top:37px;padding:11px 0 8px;}
+  .clbar input{padding:9px 11px;}
+  .clcount{font-size:8px;letter-spacing:.12em;}
+  .clhead{font-size:8px;}
+  .clrow{padding:9px 0;}
+  .cltitle b{font-size:12.5px;}
+  .cltitle s{font-size:8px;}
+  .clchips span{font-size:10.5px;padding:2px 6px;}
+  .clnum{font-size:9px;}
+  .clnone{font-size:10px;}
+  .cxbar{font-size:8px;padding:11px 0 8px;}
+  .cxc{padding:8px;gap:9px;}
+  .cxthumb{width:48px;height:48px;}
+  .cxmeta em{font-size:7.5px;}
+  .cxmeta b{font-size:12px;}
+  .cxmeta s{font-size:9.5px;}
+  .lock p{font-size:10px;}
+  .lockrow button{font-size:10px;padding:10px 13px;}
+  .promptbox{font-size:11px;padding:10px;line-height:1.6;}
+  .copy{font-size:8.5px;}
+  .err{font-size:9.5px;}
 }
 @media (prefers-reduced-motion:no-preference){
   .panel.on .panelbox{animation:up .18s ease-out;}
@@ -286,7 +327,8 @@ body{
 
 <body>
 
-<div class="stage">
+<div class="fit" id="fit">
+<div class="stage" id="stage">
   <i class="reg tl"></i><i class="reg tr"></i><i class="reg bl"></i><i class="reg br"></i>
 
 <main class="label">
@@ -381,6 +423,7 @@ body{
   <div class="stamp">VINCERE</div>
 
 </main>
+</div>
 </div>
 
 
@@ -666,6 +709,25 @@ document.querySelectorAll('.copy').forEach(function(btn){
     });
   });
 });
+
+/* ---------- 좁은 화면에서 카드 통째로 축소 ---------- */
+(function(){
+  var fit = document.getElementById('fit'), stage = document.getElementById('stage');
+  var DESIGN = 452;                       /* 카드 420 + 좌우 정합마크 여유 */
+  var MOBILE_MAX = 0.82;                  /* ✏️ 모바일에서의 최대 크기 (작게: 0.75 / 크게: 0.9) */
+  function apply(){
+    var vw = document.documentElement.clientWidth;
+    var z = Math.min(1, (vw - 22) / DESIGN);
+    if(vw < 620) z = Math.min(z, MOBILE_MAX);
+    stage.style.transform = z < 1 ? 'scale(' + z + ')' : '';
+    fit.style.height = (stage.offsetHeight * z) + 'px';
+  }
+  apply();
+  window.addEventListener('resize', apply);
+  window.addEventListener('load', apply);
+  if(window.ResizeObserver) new ResizeObserver(apply).observe(stage);
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(apply);
+})();
 
 /* ---------- 배려리스트 : 자동 집계 + 검색 ---------- */
 (function(){

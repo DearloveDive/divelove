@@ -32,7 +32,7 @@ body{
   padding:34px 8px calc(40px + env(safe-area-inset-bottom));
 }
 /* 화면이 좁으면 카드 전체를 그대로 축소합니다 (비율은 PC와 동일) */
-.fit{width:100%;display:flex;justify-content:center;overflow:hidden;}
+.fit{width:100%;display:flex;justify-content:center;}
 .mono{font-family:'IBM Plex Mono',monospace;}
 /* 띄어쓰기 없는 긴 글이 칸 밖으로 나가지 않도록 */
 .micro,.defn,.modtxt,.footxt,.geo,.cxmeta,.cltitle,.clchips span,
@@ -41,7 +41,7 @@ body{
 .geo b{min-width:0;}
 
 /* ============ 크롭 마크 ============ */
-.stage{position:relative;width:420px;flex:none;transform-origin:top center;}
+.stage{position:relative;width:420px;max-width:100%;}
 .stage .reg{position:absolute;width:15px;height:15px;opacity:.85;}
 .stage .reg::before,.stage .reg::after{content:"";position:absolute;background:#fff;}
 .stage .reg::before{left:7px;top:0;width:1px;height:15px;}
@@ -246,6 +246,59 @@ body{
 .cxmeta s{display:block;text-decoration:none;font-size:10.5px;line-height:1.4;
   color:var(--g3);overflow-wrap:anywhere;}
 .cxc:hover .cxmeta em,.cxc:hover .cxmeta s,.cxc:hover .cxthumb i{color:var(--g1);}
+/* ============ 좁은 화면 : 구성은 PC와 같고 크기만 줄입니다
+   ✏️ 더 작게 하려면 아래 숫자들을 낮추세요 ============ */
+@media (max-width:560px){
+  body{padding:26px 12px calc(34px + env(safe-area-inset-bottom));}
+  .stage .reg{width:12px;}
+  .stage .reg::before{left:5.5px;height:12px;}
+  .stage .reg::after{top:5.5px;width:12px;}
+  .reg.tl,.reg.tr{top:-20px;} .reg.bl,.reg.br{bottom:-20px;}
+  .reg.tl,.reg.bl{left:-11px;} .reg.tr,.reg.br{right:-11px;}
+  .label{padding:0 17px 0 13px;border-radius:17px;}
+  .spine{width:14px;}
+  .tick{height:11px;margin-top:11px;}
+  .geo{font-size:8px;padding:5px 0 8px;gap:8px;}
+  .geo b{font-size:9.5px;}
+  .mods{grid-template-columns:34px 34px 1fr;gap:8px;padding:7px 0;}
+  .xbox,.dotcircle{width:34px;height:34px;}
+  .dotcircle{background-size:2.8px 2.8px;}
+  .modtxt{font-size:8px;}
+  .modtxt b{font-size:11px;}
+  .band{height:36px;margin:7px 0;}
+  .band span,.band em{font-size:8px;}
+  .hero{padding:11px 0 3px;gap:8px;grid-template-columns:1fr 17px;}
+  .kicker{font-size:8px;}
+  .name{font-size:36px;}
+  .vtext{font-size:7.5px;letter-spacing:.18em;}
+  .split{margin-top:9px;}
+  .split > div{padding:8px 0;}
+  .split > div:first-child{padding-right:9px;}
+  .split > div:last-child{padding-left:9px;}
+  .micro{font-size:8px;line-height:1.6;}
+  .defn{font-size:8px;margin-top:6px;}
+  .defn b{font-size:13px;}
+  .glyphs{font-size:11px;gap:5px;}
+  .arrows{font-size:18px;margin-top:8px;}
+  .primary{font-size:12px;padding:12px 13px;margin-top:11px;}
+  .primary small{font-size:7.5px;margin-top:3px;}
+  .primary i{font-size:16px;}
+  .rows{margin-top:8px;}
+  .row{font-size:11px;padding:9px 2px;gap:8px;}
+  .row em{font-size:7.5px;}
+  .row i{font-size:10px;}
+  .duo{gap:4px;margin:5px 0 2px;}
+  .dbtn{font-size:9.5px;padding:8px 9px;}
+  .dbtn small{font-size:7px;}
+  .dbtn i{font-size:10px;}
+  .foot{grid-template-columns:44px 1fr;gap:10px;padding:11px 0 8px;}
+  #qr{width:44px;height:44px;}
+  .footbar{height:20px;}
+  .footxt{font-size:7.5px;}
+  .footxt b{font-size:9.5px;}
+  .stamp{font-size:8px;padding:4px;margin-bottom:12px;letter-spacing:.18em;}
+}
+
 @media (max-width:560px){.cxgrid{grid-template-columns:1fr;}}
 
 /* ============ 배려리스트 표 ============ */
@@ -709,25 +762,6 @@ document.querySelectorAll('.copy').forEach(function(btn){
     });
   });
 });
-
-/* ---------- 좁은 화면에서 카드 통째로 축소 ---------- */
-(function(){
-  var fit = document.getElementById('fit'), stage = document.getElementById('stage');
-  var DESIGN = 452;                       /* 카드 420 + 좌우 정합마크 여유 */
-  var MOBILE_MAX = 0.82;                  /* ✏️ 모바일에서의 최대 크기 (작게: 0.75 / 크게: 0.9) */
-  function apply(){
-    var vw = document.documentElement.clientWidth;
-    var z = Math.min(1, (vw - 22) / DESIGN);
-    if(vw < 620) z = Math.min(z, MOBILE_MAX);
-    stage.style.transform = z < 1 ? 'scale(' + z + ')' : '';
-    fit.style.height = (stage.offsetHeight * z) + 'px';
-  }
-  apply();
-  window.addEventListener('resize', apply);
-  window.addEventListener('load', apply);
-  if(window.ResizeObserver) new ResizeObserver(apply).observe(stage);
-  if(document.fonts && document.fonts.ready) document.fonts.ready.then(apply);
-})();
 
 /* ---------- 배려리스트 : 자동 집계 + 검색 ---------- */
 (function(){

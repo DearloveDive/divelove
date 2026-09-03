@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+
+<!-- ✏️ [수정 01] 브라우저 탭 제목 -->
+<title>IDENTITY / SR22504</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#000;
+  --label:#f3f3f1;
+  --ink:#000;
+  --g1:#c9c9c6;
+  --g2:#9a9a96;
+  --g3:#6d6d69;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;background:var(--bg);}
+body{
+  color:var(--ink);
+  font-family:'IBM Plex Sans KR','IBM Plex Mono',sans-serif;
+  font-size:15px;line-height:1.5;
+  display:flex;justify-content:center;
+  padding:44px 22px calc(52px + env(safe-area-inset-bottom));
+}
+.mono{font-family:'IBM Plex Mono',monospace;}
+
+/* ============ 크롭 마크 ============ */
+.stage{position:relative;width:100%;max-width:430px;}
+.stage .reg{position:absolute;width:15px;height:15px;opacity:.85;}
+.stage .reg::before,.stage .reg::after{content:"";position:absolute;background:#fff;}
+.stage .reg::before{left:7px;top:0;width:1px;height:15px;}
+.stage .reg::after{top:7px;left:0;height:1px;width:15px;}
+.reg.tl{top:-26px;left:-14px;} .reg.tr{top:-26px;right:-14px;}
+.reg.bl{bottom:-26px;left:-14px;} .reg.br{bottom:-26px;right:-14px;}
+
+/* ============ 라벨 카드 ============ */
+.label{
+  position:relative;background:var(--label);
+  border-radius:22px;overflow:hidden;
+  padding:0 26px 0 20px;
+}
+/* 좌우 세로 바코드 기둥 */
+.spine{position:absolute;top:0;bottom:0;width:20px;
+  background:repeating-linear-gradient(180deg,
+    #000 0 2px,transparent 2px 5px,#000 5px 6px,transparent 6px 10px,
+    #000 10px 14px,transparent 14px 15px,#000 15px 17px,transparent 17px 21px,
+    #000 21px 22px,transparent 22px 26px);
+}
+.spine.r{right:0;}
+
+/* ============ 상단 눈금자 ============ */
+.tick{
+  height:14px;margin-top:14px;
+  background:repeating-linear-gradient(90deg,#000 0 1px,transparent 1px 5px);
+  border-bottom:1px solid var(--ink);
+}
+.geo{
+  display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+  font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.02em;
+  padding:6px 0 10px;
+}
+.geo b{font-weight:600;font-size:11px;letter-spacing:-.01em;}
+
+/* ============ 도형 모듈 줄 ============ */
+.mods{display:grid;grid-template-columns:44px 44px 1fr;gap:9px;align-items:center;
+  border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);padding:9px 0;}
+.xbox{width:44px;height:44px;border:1px solid var(--ink);position:relative;}
+.xbox::before,.xbox::after{content:"";position:absolute;inset:0;background:
+  linear-gradient(to bottom right,transparent calc(50% - .6px),#000 50%,transparent calc(50% + .6px));}
+.xbox::after{transform:scaleX(-1);}
+.dotcircle{width:44px;height:44px;border-radius:50%;
+  background-image:radial-gradient(#000 .9px,transparent 1px);background-size:3.4px 3.4px;}
+.modtxt{font-family:'IBM Plex Mono',monospace;font-size:9px;line-height:1.5;color:var(--g3);}
+.modtxt b{display:block;font-size:13px;color:var(--ink);letter-spacing:.02em;font-weight:600;}
+
+/* ============ 회색 그라디언트 띠 ============ */
+.band{
+  height:46px;margin:9px 0;position:relative;
+  background:linear-gradient(90deg,var(--g1) 0 34%,var(--g2) 34% 62%,var(--g3) 62% 84%,#3a3a37 84% 100%);
+}
+.band span{
+  position:absolute;left:0;top:0;background:var(--ink);color:var(--label);
+  font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.16em;padding:3px 7px;
+}
+.band em{
+  position:absolute;right:6px;bottom:4px;font-style:normal;color:var(--label);
+  font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;
+}
+
+/* ============ 이름 ============ */
+.hero{display:grid;grid-template-columns:1fr 22px;gap:10px;padding:14px 0 4px;}
+.kicker{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.2em;color:var(--g3);margin:0 0 4px;}
+.name{font-size:clamp(34px,11.5vw,50px);font-weight:700;letter-spacing:-.045em;line-height:.88;margin:0;}
+.name s{display:block;text-decoration:none;color:var(--g2);}
+.vtext{writing-mode:vertical-rl;font-family:'IBM Plex Mono',monospace;
+  font-size:8.5px;letter-spacing:.22em;color:var(--g3);justify-self:end;}
+
+/* ============ 본문 두 칸 ============ */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:0;
+  border-top:1px solid var(--ink);margin-top:12px;}
+.split > div{padding:10px 0;}
+.split > div:first-child{border-right:1px solid var(--ink);padding-right:11px;}
+.split > div:last-child{padding-left:11px;}
+.micro{font-family:'IBM Plex Mono',monospace;font-size:9px;line-height:1.65;color:var(--g3);
+  text-align:justify;margin:0;hyphens:auto;}
+.micro b{color:var(--ink);}
+.defn{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--g3);margin:8px 0 0;}
+.defn b{display:block;font-size:15px;color:var(--ink);letter-spacing:-.01em;}
+.glyphs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;font-size:13px;line-height:1;color:var(--ink);}
+.glyphs span{aspect-ratio:1;display:grid;place-items:center;}
+.arrows{font-size:22px;letter-spacing:2px;line-height:1;margin-top:10px;}
+
+/* ============ 큰 버튼 ============ */
+.primary{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;
+  background:var(--ink);color:var(--label);border:none;cursor:pointer;
+  font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;letter-spacing:.02em;
+  padding:15px 16px;text-align:left;margin-top:14px;
+}
+.primary small{display:block;font-size:8.5px;font-weight:400;letter-spacing:.2em;color:var(--g2);margin-top:4px;}
+.primary i{font-style:normal;font-size:19px;}
+.primary:hover,.primary:focus-visible{background:var(--label);color:var(--ink);
+  box-shadow:inset 0 0 0 1px var(--ink);}
+.primary:hover small,.primary:focus-visible small{color:var(--g3);}
+
+/* ============ 링크 칸 ============ */
+.rows{margin-top:9px;border-top:1px solid var(--ink);}
+.row{
+  display:flex;align-items:center;gap:10px;width:100%;
+  border:none;border-bottom:1px solid var(--ink);background:none;cursor:pointer;
+  font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink);
+  text-decoration:none;padding:11px 2px;text-align:left;
+}
+.row b{font-weight:600;letter-spacing:.06em;}
+.row em{font-style:normal;font-size:8.5px;letter-spacing:.16em;color:var(--g3);}
+.row i{font-style:normal;margin-left:auto;font-size:12px;color:var(--g3);}
+.row:hover,.row:focus-visible{background:var(--ink);color:var(--label);padding-left:8px;}
+.row:hover em,.row:hover i,.row:focus-visible em,.row:focus-visible i{color:var(--g1);}
+
+/* ============ 맨 아래 검정 버튼 두 개 ============ */
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:6px 0 2px;}
+.dbtn{
+  display:flex;align-items:center;justify-content:space-between;gap:6px;
+  background:var(--ink);color:var(--label);border:none;cursor:pointer;
+  font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;
+  letter-spacing:.08em;padding:9px 10px;text-align:left;}
+.dbtn small{display:block;font-size:7.5px;font-weight:400;letter-spacing:.14em;
+  color:var(--g2);margin-top:2px;}
+.dbtn i{font-style:normal;font-size:11px;}
+.dbtn:hover,.dbtn:focus-visible{background:var(--label);color:var(--ink);
+  box-shadow:inset 0 0 0 1px var(--ink);}
+.dbtn:hover small,.dbtn:focus-visible small{color:var(--g3);}
+
+/* ============ 푸터 ============ */
+.foot{display:grid;grid-template-columns:54px 1fr;gap:12px;align-items:end;padding:14px 0 10px;}
+#qr{width:54px;height:54px;}
+.footxt{font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.06em;color:var(--g3);}
+.footxt b{display:block;color:var(--ink);font-size:11px;font-weight:600;letter-spacing:.02em;}
+.footbar{height:26px;margin-bottom:5px;background:
+  repeating-linear-gradient(90deg,#000 0 1px,transparent 1px 3px,#000 3px 6px,transparent 6px 7px,
+  #000 7px 8px,transparent 8px 12px,#000 12px 15px,transparent 15px 16px);}
+.stamp{background:var(--ink);color:var(--label);font-family:'IBM Plex Mono',monospace;
+  font-size:9px;letter-spacing:.22em;text-align:center;padding:5px;margin-bottom:16px;}
+
+/* ============ 패널 ============ */
+.panel{position:fixed;inset:0;z-index:50;display:none;background:rgba(0,0,0,.72);
+  padding:22px 16px calc(22px + env(safe-area-inset-bottom));overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.panel.on{display:flex;justify-content:center;align-items:flex-start;}
+.panelbox{width:100%;max-width:430px;background:var(--label);border-radius:18px;overflow:hidden;}
+.panelhead{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;
+  gap:10px;background:var(--ink);color:var(--label);padding:13px 16px;
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.2em;}
+.panelhead button{background:none;border:1px solid var(--label);color:var(--label);
+  font:inherit;font-size:10px;cursor:pointer;padding:4px 9px;letter-spacing:.1em;}
+.panelhead button:hover{background:var(--label);color:var(--ink);}
+.panelbody{padding:16px 20px 4px;}
+
+.sec{margin-bottom:20px;}
+.sec > h3{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+  font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.18em;
+  margin:0 0 8px;padding-bottom:5px;border-bottom:1px solid var(--ink);}
+.sec > h3 s{color:var(--g3);text-decoration:none;font-weight:400;letter-spacing:0;font-size:11px;}
+.sec p{margin:0 0 6px;font-size:14px;}
+.sec ul{margin:0;padding-left:15px;font-size:14px;}
+.sec li{margin-bottom:3px;}
+.pair{display:grid;grid-template-columns:74px 1fr;gap:3px 10px;font-size:14px;}
+.pair dt{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;color:var(--g3);padding-top:5px;}
+.pair dd{margin:0;}
+
+.lock p{font-size:11px;color:var(--g3);margin:2px 0 12px;font-family:'IBM Plex Mono',monospace;letter-spacing:.1em;}
+.lockrow{display:flex;}
+.lockrow input{flex:1;min-width:0;font:inherit;font-family:'IBM Plex Mono',monospace;
+  letter-spacing:.35em;font-size:15px;border:1px solid var(--ink);border-right:none;
+  background:transparent;padding:12px 13px;color:var(--ink);border-radius:0;}
+.lockrow input:focus{outline:2px solid var(--ink);outline-offset:-2px;}
+.lockrow button{font:inherit;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.16em;
+  background:var(--ink);color:var(--label);border:1px solid var(--ink);padding:12px 16px;cursor:pointer;}
+.lockrow button:hover{background:var(--label);color:var(--ink);}
+.err{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;margin:10px 0 4px;min-height:15px;}
+.hidden{display:none;}
+.promptbox{border:1px solid var(--ink);padding:11px;margin-bottom:8px;
+  font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.65;
+  white-space:pre-wrap;word-break:break-word;}
+.copy{font:inherit;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.18em;
+  background:none;border:1px solid var(--ink);padding:5px 11px;cursor:pointer;}
+.copy:hover{background:var(--ink);color:var(--label);}
+
+/* ============ 트친 링크 ============ */
+.cxbar{display:flex;justify-content:space-between;gap:10px;align-items:baseline;
+  font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.16em;
+  color:var(--g3);padding:14px 0 10px;border-bottom:1px solid var(--ink);margin-bottom:12px;}
+.cxgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding-bottom:8px;}
+.cxc{display:flex;gap:11px;align-items:center;border:1px solid var(--ink);
+  padding:9px;text-decoration:none;color:var(--ink);min-width:0;}
+.cxc:hover,.cxc:focus-visible{background:var(--ink);color:var(--label);}
+.cxthumb{width:58px;height:58px;flex:none;position:relative;overflow:hidden;
+  border:1px solid currentColor;display:grid;place-items:center;
+  background-image:repeating-linear-gradient(45deg,rgba(0,0,0,.10) 0 4px,transparent 4px 8px);}
+.cxthumb i{font-style:normal;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--g3);}
+.cxthumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  filter:grayscale(1) contrast(1.05);}
+.cxc:hover .cxthumb img{filter:none;}
+.cxmeta{min-width:0;}
+.cxmeta em{display:block;font-style:normal;font-family:'IBM Plex Mono',monospace;
+  font-size:8px;letter-spacing:.2em;color:var(--g3);}
+.cxmeta b{display:block;font-size:13.5px;font-weight:600;margin:3px 0 2px;
+  line-height:1.2;overflow-wrap:anywhere;}
+.cxmeta s{display:block;text-decoration:none;font-size:10.5px;line-height:1.4;
+  color:var(--g3);overflow-wrap:anywhere;}
+.cxc:hover .cxmeta em,.cxc:hover .cxmeta s,.cxc:hover .cxthumb i{color:var(--g1);}
+@media (max-width:560px){.cxgrid{grid-template-columns:1fr;}}
+
+/* ============ 배려리스트 표 ============ */
+.panelbox.wide{max-width:720px;}
+.clbar{position:sticky;top:41px;z-index:1;background:var(--label);padding:14px 0 10px;}
+.clbar input{
+  width:100%;font:inherit;font-family:'IBM Plex Mono',monospace;font-size:13px;
+  border:1px solid var(--ink);background:transparent;color:var(--ink);
+  padding:11px 13px;border-radius:0;}
+.clbar input:focus{outline:2px solid var(--ink);outline-offset:-2px;}
+.clcount{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.16em;
+  color:var(--g3);margin-top:8px;display:flex;justify-content:space-between;gap:10px;}
+.clhead,.clrow{display:grid;grid-template-columns:132px 1fr 26px;gap:12px;align-items:start;}
+.clhead{font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.18em;
+  color:var(--g3);padding-bottom:6px;border-bottom:1px solid var(--ink);}
+.clrow{padding:11px 0;border-bottom:1px solid rgba(0,0,0,.16);}
+.clrow.off{display:none;}
+.cltitle b{display:block;font-size:14px;font-weight:600;letter-spacing:-.01em;line-height:1.25;}
+.cltitle s{display:block;text-decoration:none;font-family:'IBM Plex Mono',monospace;
+  font-size:8.5px;letter-spacing:.16em;color:var(--g3);margin-top:2px;}
+.clchips{display:flex;flex-wrap:wrap;gap:5px;}
+.clchips span{font-family:'IBM Plex Mono',monospace;font-size:11.5px;
+  border:1px solid var(--ink);padding:3px 8px;line-height:1.3;}
+.clchips span.hit{background:var(--ink);color:var(--label);}
+.clchips span.dim{opacity:.28;}
+.clnum{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--g3);text-align:right;padding-top:3px;}
+.clnone{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--g3);
+  padding:22px 0;text-align:center;display:none;}
+.clnone.on{display:block;}
+
+@media (max-width:560px){
+  .clhead{grid-template-columns:1fr 26px;}
+  .clhead span:nth-child(2){display:none;}
+  .clrow{grid-template-columns:1fr 26px;gap:8px 12px;}
+  .clchips{grid-column:1/3;}
+}
+@media (max-width:360px){
+  .split{grid-template-columns:1fr;}
+  .split > div:first-child{border-right:none;border-bottom:1px solid var(--ink);padding-right:0;}
+  .split > div:last-child{padding-left:0;}
+}
+@media (prefers-reduced-motion:no-preference){
+  .panel.on .panelbox{animation:up .18s ease-out;}
+  @keyframes up{from{transform:translateY(12px);opacity:0;}}
+}
+</style>
+</head>
+
+<body>
+
+<div class="stage">
+  <i class="reg tl"></i><i class="reg tr"></i><i class="reg bl"></i><i class="reg br"></i>
+
+<main class="label">
+  <div class="spine r"></div>
+
+  <div class="tick"></div>
+
+  <!-- ✏️ [수정 02] 맨 윗줄 좌표·번호 -->
+  <div class="geo">
+    <b>37° 33' 00.0" N, 126° 58' 41.0" E</b>
+    <span>047</span>
+  </div>
+
+  <!-- ✏️ [수정 03] 도형 옆 작은 글자 -->
+  <div class="mods">
+    <div class="xbox"></div>
+    <div class="dotcircle"></div>
+    <div class="modtxt">
+      <b>&amp;BARCODE</b>
+      SR22504 / 20XX — 파일 번호를 적는 곳
+    </div>
+  </div>
+
+  <!-- ✏️ [수정 04] 회색 띠 위 라벨 -->
+  <div class="band">
+    <span>DESIRABLE</span>
+    <em>10-21</em>
+  </div>
+
+  <!-- ✏️ [수정 05] 이름 / 옆 세로 글자 -->
+  <div class="hero">
+    <div>
+      <p class="kicker">[ IDENTITY ]</p>
+      <p class="name">NULL<s>DEARLOVEDIVE</s></p>
+    </div>
+    <div class="vtext">POSTAL USE ONLY</div>
+  </div>
+
+  <div class="split">
+    <!-- ✏️ [수정 06] 왼쪽 작은 글 -->
+    <div>
+      <p class="micro"><b>a person or thing —</b> VINCERE.the dynamic of conquest.#파괴를통한구원#애증과소유욕의변주곡#가장완벽한파멸을향한탐닉</p>
+      <p class="defn"><b>VINCERE</b>fearless | KR Branch | AxSclass</p>
+    </div>
+    <!-- ✏️ [수정 07] 오른쪽 기호 (원하는 문자로 바꿔도 됩니다) -->
+    <div>
+      <div class="glyphs">
+        <span>◤</span><span>◥</span><span>▣</span><span>⊠</span>
+        <span>◣</span><span>◢</span><span>◇</span><span>●</span>
+      </div>
+      <div class="arrows">↑↑↑</div>
+    </div>
+  </div>
+
+  <!-- ✏️ [수정 08] 대표 버튼 글자 -->
+  <button class="primary" data-open="p-about">
+    <span>About me<small>OPEN FULL PROFILE</small></span>
+    <i>→</i>
+  </button>
+
+  <!-- ✏️ [수정 09] 링크 주소를 href="" 안에 넣으세요 -->
+  <div class="rows">
+    <a class="row" href="https://dive.tistory.com/" target="_blank" rel="noopener"><b>TISTORY</b><em>BLOG</em><i>↗</i></a>
+    <a class="row" href="https://posty.pe/pc7v32f6c" target="_blank" rel="noopener"><b>POSTYPE</b><em>POST</em><i>↗</i></a>
+    <a class="row" href="https://vincere.love" target="_blank" rel="noopener"><b>VINCERE</b><em>ARCHIVE</em><i>↗</i></a>
+    <button class="row" data-open="p-link"><b>CONNECTION</b><em>트친 링크</em><i>→</i></button>
+  </div>
+
+  <!-- ✏️ [수정 09-B] 링크 목록 아래 검정 버튼 두 개 -->
+  <div class="duo">
+    <button class="dbtn" data-open="p-care">
+      <span>CARE LIST<small>배려리스트</small></span><i>→</i>
+    </button>
+    <button class="dbtn" data-open="p-prompt">
+      <span>PROMPT<small>LOCKED</small></span><i>⌾</i>
+    </button>
+  </div>
+
+  <!-- ✏️ [수정 10] 아래 작은 글자 -->
+  <div class="foot">
+    <svg id="qr" viewBox="0 0 21 21" shape-rendering="crispEdges" aria-hidden="true"></svg>
+    <div>
+      <div class="footbar"></div>
+      <div class="footxt">
+        <b>SN 0006 / 738 — SURREAL</b>
+        UPDATED 20XX.XX.XX · VER 1.0 · NO OBJECT
+      </div>
+    </div>
+  </div>
+
+  <!-- ✏️ [수정 11] 맨 아래 검정 띠 -->
+  <div class="stamp">VINCERE</div>
+
+</main>
+</div>
+
+
+<!-- ================= 자기소개 패널 ================= -->
+<div class="panel" id="p-about">
+  <div class="panelbox">
+    <div class="panelhead"><span>ABOUT / 자기소개</span><button data-close>CLOSE ✕</button></div>
+    <div class="panelbody">
+
+      <!-- ✏️ [수정 12] 기본 정보 -->
+      <div class="sec">
+        <h3>PROFILE <s>기본 정보</s></h3>
+        <dl class="pair">
+          <dt>NAME</dt><dd>캔따개</dd>
+          <dt>TWITTER</dt><dd>@dearloveDIVE</dd>
+          <dt>DREAM</dt><dd>fearless - dive</dd>
+        </dl>
+      </div>
+
+      <!-- ✏️ [수정 16] 규칙 -->
+      <div class="sec">
+        <h3>NOTICE <s>읽어주세요</s></h3>
+        <ul><li>1t1d</li><li>극온리, 비이입</li></ul>
+      </div>
+
+      <!-- ✏️ [수정 13] 소개 글 -->
+      <div class="sec">
+        <h3>ABOUT <s>소개</s></h3>
+        <p>AI 채팅 계정으로 로그 백업 및 배포 계정입니다.</p>
+        <p>-</p>
+        <p>케이브덕 사용, 피어리스 다이브와 드림하고 있습니다.</p>
+        <p>1t1d 계정으로 같은 드림은 더 모시지 않습니다.</p>
+        <p>극온리로 겹드 보기 힘들어합니다. 겹드 보이는대로 블락합니다.</p>
+        <p>허위사실 유포하지 말아주세요.</p>
+      </div>
+
+      <!-- ✏️ [수정 14] 좋아하는 것 — 쓰고 싶으면 아래 주석을 푸세요
+      <div class="sec">
+        <h3>LIKE <s>좋아하는 것</s></h3>
+        <ul><li>항목</li><li>항목</li><li>항목</li></ul>
+      </div>-->
+
+      <!-- ✏️ [수정 15] 싫어하는 것 — 쓰고 싶으면 아래 주석을 푸세요
+      <div class="sec">
+        <h3>DISLIKE <s>싫어하는 것</s></h3>
+        <ul><li>항목</li><li>항목</li></ul>
+      </div>-->
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ================= 배려리스트 패널 ================= -->
+<div class="panel" id="p-care">
+  <div class="panelbox wide">
+    <div class="panelhead"><span>CARE LIST / 배려리스트</span><button data-close>CLOSE ✕</button></div>
+    <div class="panelbody">
+
+      <!-- ✏️ [수정 16-A] 맨 위 안내 문구 -->
+      <div class="clbar">
+        <input id="clSearch" type="search" autocomplete="off" placeholder="작품 · 캐릭터 검색" aria-label="작품 캐릭터 검색">
+        <div class="clcount">
+          <span>PLEASE BE CONSIDERATE — 아래 캐릭터들을 배려해 주세요</span>
+          <b id="clTotal"></b>
+        </div>
+      </div>
+
+      <div class="clhead"><span>TITLE / 작품</span><span>CHARACTER / 캐릭터</span><span>N</span></div>
+
+      <!-- ✏️ [수정 16-B] 목록
+           한 줄 = 작품 하나. <div class="clrow"> 덩어리를 복사해서 붙이면 늘어납니다.
+           b = 작품명 / s = 영문표기 / span = 캐릭터 하나
+           오른쪽 숫자와 맨 위 합계는 자동으로 세어집니다. -->
+      <div id="clBody">
+        <div class="clrow">
+          <div class="cltitle"><b>피어리스</b><s>FEARLESS</s></div>
+          <div class="clchips"><span>플릭</span><span>불랑</span><span>제스테</span><span>도브</span><span>언커먼</span><span>지젤</span><span>일레이</span><span>헤이즈</span><span>머스탱</span><span>타이탄</span><span>지크</span><span>디올(a+)</span></div>
+          <div class="clnum"></div>
+        </div>
+        <div class="clrow">
+          <div class="cltitle"><b>아크</b><s>ARK</s></div>
+          <div class="clchips"><span>신드롬</span><span>휴고</span><span>애쉬</span><span>코드</span><span>에덴</span><span>퓨어</span><span>윈터</span><span>해일</span><span>헬리오스</span><span>카르마</span></div>
+          <div class="clnum"></div>
+        </div>
+        <div class="clrow">
+          <div class="cltitle"><b>세라픽스</b><s>SERAPHIX</s></div>
+          <div class="clchips"><span>어비스</span><span>테오</span><span>이브</span><span>에테르</span><span>넵튠</span><span>디비언트</span><span>쏜즈</span></div>
+          <div class="clnum"></div>
+        </div>
+        <div class="clrow">
+          <div class="cltitle"><b>멈머버스</b><s>MUMMERVERSE</s></div>
+          <div class="clchips"><span>아르비테르</span><span>키츠네</span><span>에단</span><span>갬블러</span><span>파놉테스</span><span>헌터</span></div>
+          <div class="clnum"></div>
+        </div>
+        <div class="clrow">
+          <div class="cltitle"><b>테미스</b><s>THEMIS</s></div>
+          <div class="clchips"><span>디에고</span><span>주지호</span><span>서도혁</span><span>카즈마</span><span>레비</span></div>
+          <div class="clnum"></div>
+        </div>
+        <div class="clrow">
+          <div class="cltitle"><b>혹한기</b><s>HOKHANGI</s></div>
+          <div class="clchips"><span>구예천</span><span>제로</span><span>파벨</span></div>
+          <div class="clnum"></div>
+        </div>
+        <div class="clrow">
+          <div class="cltitle"><b>애프터메스</b><s>AFTERMATH</s></div>
+          <div class="clchips"><span>10</span><span>9</span><span>요조</span></div>
+          <div class="clnum"></div>
+        </div>
+        <div class="clrow">
+          <div class="cltitle"><b>냥프원</b><s>NYANGPWON</s></div>
+          <div class="clchips"><span>단테</span><span>마티스</span></div>
+          <div class="clnum"></div>
+        </div>
+        <div class="clrow">
+          <div class="cltitle"><b>네온슬럼시뮬레이터</b><s>NEON SLUM</s></div>
+          <div class="clchips"><span>란시</span><span>진위</span></div>
+          <div class="clnum"></div>
+        </div>
+        <div class="clrow">
+          <div class="cltitle"><b>스타레인</b><s>STARRAIN</s></div>
+          <div class="clchips"><span>R</span></div>
+          <div class="clnum"></div>
+        </div>
+        <div class="clrow">
+          <div class="cltitle"><b>EOC</b><s>EOC</s></div>
+          <div class="clchips"><span>베이퍼</span></div>
+          <div class="clnum"></div>
+        </div>
+        <div class="clrow">
+          <div class="cltitle"><b>패악민국</b><s>PAEAK</s></div>
+          <div class="clchips"><span>금제성</span></div>
+          <div class="clnum"></div>
+        </div>
+        <div class="clrow">
+          <div class="cltitle"><b>ohnyu</b><s>OHNYU</s></div>
+          <div class="clchips"><span>차재현</span></div>
+          <div class="clnum"></div>
+        </div>
+        <div class="clrow">
+          <div class="cltitle"><b>괴물 갱생 프로젝트</b><s>MONSTER REHAB</s></div>
+          <div class="clchips"><span>지온</span></div>
+          <div class="clnum"></div>
+        </div>
+        <div class="clrow">
+          <div class="cltitle"><b>EVE</b><s>EVE</s></div>
+          <div class="clchips"><span>천유진</span></div>
+          <div class="clnum"></div>
+        </div>
+        <div class="clrow">
+          <div class="cltitle"><b>로판</b><s>ROPAN</s></div>
+          <div class="clchips"><span>연하준</span></div>
+          <div class="clnum"></div>
+        </div>
+        <div class="clrow">
+          <div class="cltitle"><b>제타 / 케이브덕</b><s>ZETA / CAVEDUCK</s></div>
+          <div class="clchips"><span>서이현</span></div>
+          <div class="clnum"></div>
+        </div>
+        <div class="clrow">
+          <div class="cltitle"><b>제타 / 블룸</b><s>ZETA / BLOOM</s></div>
+          <div class="clchips"><span>이태수</span></div>
+          <div class="clnum"></div>
+        </div>
+        <div class="clrow">
+          <div class="cltitle"><b>케이브덕</b><s>CAVEDUCK</s></div>
+          <div class="clchips"><span>판타스마고리아</span><span>엔트로피아</span><span>카지야마 류</span><span>카지야마 겐조</span></div>
+          <div class="clnum"></div>
+        </div>
+      </div>
+
+      <p class="clnone" id="clNone">NO RESULT — 검색 결과가 없습니다</p>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ================= 트친 링크 패널 ================= -->
+<div class="panel" id="p-link">
+  <div class="panelbox wide">
+    <div class="panelhead"><span>CONNECTION / 트친 링크</span><button data-close>CLOSE ✕</button></div>
+    <div class="panelbody">
+
+      <!-- ✏️ [수정 16-C] 맨 위 안내 문구 -->
+      <div class="cxbar">
+        <span>LINKED ACCOUNTS — 눌러서 이동합니다</span>
+        <b id="cxTotal"></b>
+      </div>
+
+      <!-- 목록은 맨 아래 스크립트의 CONNECTIONS 에서 수정합니다 -->
+      <div class="cxgrid" id="cxBody"></div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ================= 프롬프트 패널 ================= -->
+<div class="panel" id="p-prompt">
+  <div class="panelbox">
+    <div class="panelhead"><span id="pTitle">PROMPT / LOCKED</span><button data-close>CLOSE ✕</button></div>
+    <div class="panelbody">
+
+      <div class="lock" id="lockView">
+        <p>ENTER PASSCODE — 비밀번호를 입력하세요</p>
+        <div class="lockrow">
+          <input id="pw" type="password" inputmode="numeric" autocomplete="off" placeholder="········" aria-label="비밀번호">
+          <button id="go">ENTER</button>
+        </div>
+        <p class="err" id="err"></p>
+      </div>
+
+      <div id="promptView" class="hidden">
+        <!-- ✏️ [수정 17] 프롬프트 내용
+             한 덩어리 = 제목 + 내용 + 복사 버튼. 복사해서 붙이면 늘어납니다. -->
+        <div class="sec">
+          <h3>PROMPT 01 <s>서인혁</s></h3>
+          <div class="promptbox"> boy,  bishounen,red hair, short hair,messy hair,m-shaped hair, red hair,red eyes,thin eyebrow,3::pale skin::, -latex black zip-up,black leather trench coat,harness, leather gloves,buckle belts,  black admiral cap,-2:: wolf cut,plump lip ::,2::yandere, menhera::,handsome man,empty eyes,</div>
+          <button class="copy">COPY</button>
+        </div>
+
+        <div class="sec">
+          <h3>PROMPT 02 <s>박유준</s></h3>
+          <div class="promptbox">boy, bishounen,male, toned male, blunts,pale skin,black hair, short hair,m-shaped hair, 2::heterochromia(black eye, gray eye),:: 1.5::neck scar,wrist scar::,:black coat, black harness, white knitwear, black cross earring on right ear , -2:: hime cut,slicked back hair,parted hair,red eye,hime cut,long hair::,tall,  5::yandere, menhera::,</div>
+          <button class="copy">COPY</button>
+        </div>
+
+        <div class="sec">
+          <h3>PROMPT 03 <s>뇨유준</s></h3>
+          <div class="promptbox">girl, bishoujo,pale skin,black hair, Hershey cut,m-shaped hair, 2::heterochromia(black eye, gray eye),:: 1.5::neck scar,wrist scar::,black cross earring on right ear,-black coat, black harness, white knitwear ,black gloves,short black pants, black stockings,Black Pantyhose , skimpy,  4::yandere, menhera::, skindentation, slender,cleavage, huge breast,temptation, -2:: hime cut, long hair, twintail::, </div>
+          <button class="copy">COPY</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<script>
+/* ✏️ [수정 18] 비밀번호 */
+var PASSCODE = "10210901";
+
+function openPanel(id){
+  document.getElementById(id).classList.add('on');
+  document.body.style.overflow = 'hidden';
+}
+function closeAll(){
+  document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('on'); });
+  document.body.style.overflow = '';
+}
+document.querySelectorAll('[data-open]').forEach(function(b){
+  b.addEventListener('click', function(){ openPanel(b.dataset.open); });
+});
+document.querySelectorAll('[data-close]').forEach(function(b){ b.addEventListener('click', closeAll); });
+document.querySelectorAll('.panel').forEach(function(p){
+  p.addEventListener('click', function(e){ if(e.target === p) closeAll(); });
+});
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeAll(); });
+
+var pw = document.getElementById('pw'), err = document.getElementById('err');
+function tryUnlock(){
+  if(pw.value === PASSCODE){
+    document.getElementById('lockView').classList.add('hidden');
+    document.getElementById('promptView').classList.remove('hidden');
+    document.getElementById('pTitle').textContent = 'PROMPT / OPEN';
+    err.textContent = '';
+  }else{
+    err.textContent = '× ACCESS DENIED — 비밀번호가 맞지 않습니다';
+    pw.value = ''; pw.focus();
+  }
+}
+document.getElementById('go').addEventListener('click', tryUnlock);
+pw.addEventListener('keydown', function(e){ if(e.key === 'Enter') tryUnlock(); });
+
+document.querySelectorAll('.copy').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    navigator.clipboard.writeText(btn.previousElementSibling.textContent).then(function(){
+      btn.textContent = 'COPIED ✓';
+      setTimeout(function(){ btn.textContent = 'COPY'; }, 1200);
+    });
+  });
+});
+
+/* ---------- 배려리스트 : 자동 집계 + 검색 ---------- */
+(function(){
+  var box = document.getElementById('clBody');
+  if(!box) return;
+  var rows  = Array.prototype.slice.call(box.querySelectorAll('.clrow'));
+  var input = document.getElementById('clSearch');
+  var total = document.getElementById('clTotal');
+  var none  = document.getElementById('clNone');
+
+  rows.forEach(function(r){
+    var chips = r.querySelectorAll('.clchips span');
+    r.querySelector('.clnum').textContent = String(chips.length).padStart(2,'0');
+    r.dataset.key = (r.querySelector('.cltitle').textContent + ' ' +
+                     r.querySelector('.clchips').textContent).toLowerCase();
+  });
+
+  function count(list){
+    var n = 0;
+    list.forEach(function(r){ n += r.querySelectorAll('.clchips span').length; });
+    return list.length + '작품 · ' + n + '명';
+  }
+  total.textContent = '총 ' + count(rows);
+
+  function filter(){
+    var q = input.value.trim().toLowerCase();
+    var shown = [];
+    rows.forEach(function(r){
+      var hit = !q || r.dataset.key.indexOf(q) > -1;
+      r.classList.toggle('off', !hit);
+      if(hit) shown.push(r);
+      r.querySelectorAll('.clchips span').forEach(function(c){
+        var m = q && c.textContent.toLowerCase().indexOf(q) > -1;
+        c.classList.toggle('hit', !!m);
+        c.classList.toggle('dim', !!q && !m && r.querySelector('.clchips').textContent.toLowerCase().indexOf(q) > -1);
+      });
+    });
+    total.textContent = (q ? '검색 ' : '총 ') + count(shown);
+    none.classList.toggle('on', shown.length === 0);
+  }
+  input.addEventListener('input', filter);
+})();
+
+/* ---------- 트친 링크 목록 ----------
+   ✏️ [수정 19] 여기만 고치면 됩니다.
+   name = 이름 / kr = 아래 작은 글 / tag = 왼쪽 위 번호
+   src  = 이미지 경로 (html 파일 옆에 img 폴더를 만들고 넣으세요. 없으면 번호만 표시)
+   url  = 이동할 주소                                                          */
+var CONNECTIONS = [
+  { name:"#DOVSI",          kr:"Afebrile, but warm",            tag:"CONNECTION 01", src:"img/rel01.jfif", url:"https://dove.luv3r.me/" },
+  { name:"PASHASHA",        kr:"Pavel belov \u2661 Isha Rnard", tag:"CONNECTION 02", src:"img/rel02.png",  url:"https://pashasha.tistory.com/3" },
+  { name:"SWEET PARADISE",  kr:"안 되면 내 작은 재앙, 내 모든 것.", tag:"CONNECTION 03", src:"img/rel03.png",  url:"https://sweet-paradise.luv3r.me/" },
+  { name:"Hazed",           kr:"Eternal My Breath",             tag:"CONNECTION 04", src:"img/rel04.png",  url:"https://hazed.luv3r.me/" },
+  { name:"🖤JG💙💙TG🤍",      kr:"@seojaehun_hantaehwi",          tag:"CONNECTION 05", src:"img/rel05.png",  url:"https://seojaehun_hantaehwi.luv3r.me/" },
+  { name:"❤︎ Verse1",       kr:"The Only Sea in the Universe",  tag:"CONNECTION 06", src:"img/rel06.png",  url:"https://commercialblue.luv3r.me/" },
+  { name:"민정하준",          kr:"당신의 외로움이 끝나는 그날까지",    tag:"CONNECTION 07", src:"img/rel07.jfif", url:"https://yeonha-jun.luv3r.me/" },
+  { name:"79",              kr:"대위 서이현 x 소위 정스텔라",       tag:"CONNECTION 08", src:"img/rel08.jfif", url:"https://seoihyeon.love" }
+];
+
+(function(){
+  var box = document.getElementById('cxBody');
+  if(!box) return;
+
+  CONNECTIONS.forEach(function(c, i){
+    var no = String(i+1).padStart(2,'0');
+    var a = document.createElement('a');
+    a.className = 'cxc';
+    a.href = /^https?:\/\//.test(c.url || '') ? c.url : 'https://' + (c.url || '');
+    a.target = '_blank';
+    a.rel = 'noopener';
+
+    var th = document.createElement('div');
+    th.className = 'cxthumb';
+    var num = document.createElement('i');
+    num.textContent = no;
+    th.appendChild(num);
+
+    if(c.src){                       /* 이미지가 있을 때만 붙입니다 */
+      var img = new Image();
+      img.alt = '';
+      img.onload = function(){ th.appendChild(img); };
+      img.src = c.src;
+    }
+
+    var meta = document.createElement('div');
+    meta.className = 'cxmeta';
+    var em = document.createElement('em'); em.textContent = c.tag || ('CONNECTION ' + no);
+    var nm = document.createElement('b');  nm.textContent = c.name || '';
+    var kr = document.createElement('s');  kr.textContent = c.kr || '';
+    meta.appendChild(em); meta.appendChild(nm); meta.appendChild(kr);
+
+    a.appendChild(th); a.appendChild(meta);
+    box.appendChild(a);
+  });
+
+  document.getElementById('cxTotal').textContent = '총 ' + CONNECTIONS.length + '명';
+})();
+
+/* 장식용 코드 무늬 — 건드리지 않아도 됩니다 */
+(function(){
+  var svg = document.getElementById('qr'), s = 7, out = '';
+  function on(x,y){ out += '<rect x="'+x+'" y="'+y+'" width="1" height="1"/>'; }
+  function eye(ox,oy){
+    for(var x=0;x<7;x++) for(var y=0;y<7;y++){
+      if(x===0||x===6||y===0||y===6||(x>1&&x<5&&y>1&&y<5)) on(ox+x,oy+y);
+    }
+  }
+  eye(0,0); eye(14,0); eye(0,14);
+  for(var x=0;x<21;x++) for(var y=0;y<21;y++){
+    if((x<8&&y<8)||(x>12&&y<8)||(x<8&&y>12)) continue;
+    s = (s*1103515245 + 12345) % 2147483648;
+    if((s>>7)%100 < 46) on(x,y);
+  }
+  svg.innerHTML = out;
+})();
+</script>
+</body>
+</html>
